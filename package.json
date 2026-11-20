@@ -1,5 +1,12 @@
 {
+  "name": "qa-performance-k6",
+  "private": true,
   "type": "module",
+  "scripts": {
+    "stages": "node herramientas/stages_design/stages_design.js",
+    "test:all": "./herramientas/ejecutar_pruebas.sh",
+    "informe": "python3 herramientas/generar_informe.py"
+  },
   "dependencies": {
     "puppeteer": "^23.10.4"
   }

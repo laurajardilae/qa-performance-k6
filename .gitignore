@@ -68,5 +68,5 @@ pnpm-lock.yaml
 *.tar.gz
 
 # Archivos generados por el graficador de pruebas
-/stages_design/*.png
-/stages_design/*.html
+/herramientas/stages_design/*.png
+/herramientas/stages_design/*.html

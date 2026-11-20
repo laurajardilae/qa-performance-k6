@@ -7,12 +7,12 @@
 // Criterios de aceptacion: p95 <= 2s | error <= 1%
 // ----------------------------------------------------------------------------
 // Ejecutar:
-//   k6 run --summary-export=../resultados/resultados_baseline.json users_mixed_baseline.js
+//   (desde la raiz del repo) k6 run --summary-export=resultados/baseline/resumen.json scripts/mixtos/users_mixed_baseline.js
 // ============================================================================
 
 import http from 'k6/http';
-import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../utils.js';
-import { configBase, baseLine } from '../stages.js';
+import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../../lib/utils.js';
+import { configBase, baseLine } from '../../lib/stages.js';
 
 export const options = {
     scenarios: {

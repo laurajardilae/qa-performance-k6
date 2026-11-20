@@ -7,12 +7,12 @@
 // Criterios de aceptacion: p95 <= 5s | error <= 5%
 // ----------------------------------------------------------------------------
 // Ejecutar:
-//   k6 run --summary-export=../resultados/resultados_carga_maxima.json users_mixed_load2.js
+//   (desde la raiz del repo) k6 run --summary-export=resultados/carga_maxima/resumen.json scripts/mixtos/users_mixed_load2.js
 // ============================================================================
 
 import http from 'k6/http';
-import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../utils.js';
-import { configBase, load2 } from '../stages.js';
+import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../../lib/utils.js';
+import { configBase, load2 } from '../../lib/stages.js';
 
 export const options = {
     scenarios: {

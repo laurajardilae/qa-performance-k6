@@ -1,114 +1,68 @@
-<h1 align="center">
-  <br>
-  <br>
-  Proyecto base de pruebas de performance con k6 y graficador de Stages
-  <br>
-</h1>
+# QA Performance con k6
 
-<h4 align="center">Proyecto base de pruebas de performance con k6.</h4>
+Plantilla de pruebas de performance con [k6](https://grafana.com/docs/k6/). El ejemplo prueba el servicio **Users** de [FakeStore API](https://fakestoreapi.com). Sirve como guia para armar un proyecto nuevo: se cambia el servicio, los stages y los scripts, y la estructura se mantiene.
 
-<p align="center">
-<a href="https://grafana.com/oss/k6/">
-    <img src="https://img.shields.io/badge/k6-0.53.0-blue" alt="k6">
-  </a>
-  <a href="https://nodejs.org/">
-    <img src="https://img.shields.io/badge/Node.js-22.11.0-green" alt="Node.js">
-  </a>
-  <a href="https://grafana.com/">
-    <img src="https://img.shields.io/badge/Grafana-Supported-orange" alt="Grafana">
-  </a>
-  <a href="https://www.influxdata.com/">
-    <img src="https://img.shields.io/badge/InfluxDB-Compatible-blue" alt="InfluxDB">
-  </a>
-</p>
+## Estructura
 
-El siguiente proyecto es una herramienta para generar gráficos y diseñar propuestas de pruebas de Performance realizada en Java Script integrado al proyecto base de K6, a partir de los stages propuestos en el mismo.
-
-<p align="center">
-  <a href="#features">Features</a> •
-  <a href="#estructura-de-proyecto">Estructura de proyecto</a> •
-  <a href="#features">Features</a> •
-  <a href="#estructura-de-proyecto">Estructura de proyecto</a> •
-  <a href="#ejecución-local">Ejecución local</a> •
-  <a href="#generar-gráficas-de-los-stages">Generar gráficas de los stages</a> •
-  <a href="#ejecución-de-las-pruebas">Ejecución de las pruebas</a> •
-  <a href="#autores">Autores</a> •
-  <a href="#relacionados">Relacionados</a> •
-  <a href="#roadmap">Roadmap</a>
-</p>
-
-## Features
-
-- Escenario GET
-- Escenario POST
-- Graficador de stages propuestos
-
-## Estructura de proyecto
-````
-qa-performance-grafanak6
- ┣ stages_design (Grafica todos los stages disponibles en la clase stages.js)
- ┃  ┗ stages_design.js
- ┣ .gitignore
- ┣ package.json
- ┣ README.md
- ┣ reqres_get.js (Script para pruebas de escenario GET)
- ┣ reqres_post.js (Script para pruebas de escenario POST)
- ┗ stages.js (Contiene los stages que son llamados desde los script de pruebas)
-````
-
-## Ejecución local
-### Requisitos previos
-* Node.js
-* Puppeteer (js)
-* k6
-
-### Comandos de instalación
-* Clonar el proyecto
-
-```bash
-  git clone https://github.com/laurajardilae/qa-performance-k6.git
+```
+qa-performance-k6
+├── lib/                        Codigo compartido por todos los scripts
+│   ├── stages.js               Perfiles de carga (baseLine, load, load2, spike) y configBase
+│   └── utils.js                BASE_URL, headers, generadores de datos, umbrales por metodo
+├── scripts/                    Scripts k6
+│   ├── individuales/           Un metodo HTTP por script (GET, POST, PUT) para pruebas de humo/debug
+│   └── mixtos/                 Escenarios reales con mezcla 50% GET / 30% POST / 20% PUT
+│       ├── users_mixed_baseline.js   Linea base (5 TPS)
+│       ├── users_mixed_load.js       Carga (20 TPS)
+│       ├── users_mixed_load2.js      Carga maxima (30 TPS)
+│       └── users_mixed_spike.js      Picos (20 -> 30 TPS, 5 veces)
+├── herramientas/               Utilidades de apoyo
+│   ├── ejecutar_pruebas.sh     Corre los escenarios y guarda resultados
+│   ├── generar_informe.py      Genera el informe .docx desde los resultados
+│   └── stages_design/          Grafica los stages de lib/stages.js (HTML + PNG)
+├── docs/                       Plan de pruebas
+├── resultados/                 Ultima ejecucion (una carpeta por escenario) + informe .docx
+│   └── <escenario>/            resumen.json, html_report.html, dashboard_resumen.png, salida.txt
+├── package.json
+└── .gitignore
 ```
 
-* Ir al directorio del proyecto
+## Requisitos
 
-```bash
-  cd qa-performance-grafanak6
-```
+- [k6](https://grafana.com/docs/k6/latest/set-up/install-k6/)
+- Node.js (solo para el graficador de stages): `npm install`
+- Python 3 con `python-docx` (solo para el informe): `pip install python-docx`
+- Google Chrome (captura del dashboard en `ejecutar_pruebas.sh`)
 
-* Instalar dependencias (Para el graficador)
+Todos los comandos se ejecutan desde la raiz del repo.
 
-```bash
-  npm install
-```
+## Uso
 
-### Generar gráficas de los stages
-Debe existir el archivo stages.js con los stages definidos para las pruebas. **Puede ser más de 1 stage.**
-* Desde el directorio del proyecto, ejecutar
+| Objetivo | Comando |
+|---|---|
+| Un script suelto | `k6 run scripts/individuales/users_get.js` |
+| Un escenario mixto | `k6 run scripts/mixtos/users_mixed_load.js` |
+| Escenarios con resultados y dashboard | `./herramientas/ejecutar_pruebas.sh [baseline\|load\|load2\|spike]` (sin argumentos corre los 4, con 5 min de pausa entre ellos) |
+| Graficar stages | `npm run stages` (genera `stage_n.html` y `design_result_n.png` en `herramientas/stages_design/`) |
+| Informe .docx | `npm run informe` (lee `resultados/*/resumen.json`) |
 
-```bash
-  node stages_design/stages_design.js
-```
-Después de la ejecución del comando anterior, se generarán **2** archivos en la carpeta *stages_design* por cada uno de los stages descritos en `stages.js`.
-1. **`stage_n.html`**
-    - Descripción: Este archivo contiene el gráfico **interactivo** en formato `.html` para el stage **n**. Se puede abrir de forma local en el navegador de preferencia y muestra dos métricas en una tabla que son:
-        * Peticiones totales esperadas a ser enviadas a lo largo de la prueba
-        * Tiempo total de la prueba planteada.
-    - Ubicación `.\stages_design\stage_n.html`
-2. **`design_result_n.html`**
-    - Descripción: Este archivo es un screenshot en formato `.png` del gráfico interactivo en formato `.html` del punto anterior para el stage **n**. Puede ser utilizado para ver de forma rápida la propuesta o en informes.
-    - Ubicación `.\stages_design\design_result_n.png`
-> [!IMPORTANT]
-> - Si ya existen estos dos archivos en la ruta y se vuelve a ejecutar el generador de gráfico, éstos serán reemplazados.
-> - Para cambiar el título del gráfico se debe modificar el archivo `stages_design.js` al inicio del mismo donde se llama el método *graficarStages*
+Los resultados se sobrescriben en cada ejecucion: `resultados/` siempre contiene la ultima corrida.
 
-### Ejecución de las pruebas
-En el directorio del proyecto
-```bash
-  k6 run [script_name].js
-```
+## Buenas practicas aplicadas
 
-## Autores
+- **Separacion de responsabilidades:** carga (`lib/stages.js`), datos y URLs (`lib/utils.js`) y logica de prueba (`scripts/`) viven por separado.
+- **Modelo por TPS:** `ramping-arrival-rate` controla las peticiones por segundo y no los usuarios virtuales.
+- **Sin duplicacion:** la config comun esta en `configBase`; los scripts la reutilizan con `...configBase`.
+- **Desglose por metodo:** `umbralesPorMetodo()` hace que k6 reporte metricas por GET/POST/PUT.
+- **Resultados reproducibles:** cada escenario guarda metricas, dashboard HTML, captura y salida de consola.
 
-- [Laura Ardila](https://github.com/laurajardilae)
+## Para una prueba nueva
 
+1. Cambiar `BASE_URL` y los payloads en `lib/utils.js`.
+2. Definir los perfiles de carga en `lib/stages.js` y revisarlos con `npm run stages`.
+3. Copiar un script de `scripts/mixtos/` y ajustar endpoints y proporciones.
+4. Registrar el escenario en `herramientas/ejecutar_pruebas.sh` (y en `generar_informe.py` si se usa el informe).
 
+## Autor
+
+[Laura Ardila](https://github.com/laurajardilae)

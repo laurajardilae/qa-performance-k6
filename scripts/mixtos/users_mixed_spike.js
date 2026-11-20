@@ -7,12 +7,12 @@
 // Criterios de aceptacion: p95 <= 5s (durante el pico) | error <= 5%
 // ----------------------------------------------------------------------------
 // Ejecutar:
-//   k6 run --summary-export=../resultados/resultados_pico.json users_mixed_spike.js
+//   (desde la raiz del repo) k6 run --summary-export=resultados/pico/resumen.json scripts/mixtos/users_mixed_spike.js
 // ============================================================================
 
 import http from 'k6/http';
-import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../utils.js';
-import { configBase, spike } from '../stages.js';
+import { BASE_URL, JSON_PARAMS, payloadCrearUsuario, payloadActualizarUsuario, umbralesPorMetodo } from '../../lib/utils.js';
+import { configBase, spike } from '../../lib/stages.js';
 
 export const options = {
     scenarios: {
