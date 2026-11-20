@@ -4,9 +4,9 @@
 #   html_report.html      -> dashboard web nativo de k6 (graficas reales)
 #   dashboard_resumen.png -> captura de las graficas (la usa generar_informe.py)
 #   salida.txt            -> salida de consola
-# Uso: ./ejecutar_pruebas.sh [baseline|load|load2|spike ...]   (sin argumentos: los 4)
+# Uso: ./herramientas/ejecutar_pruebas.sh [baseline|load|load2|spike ...]   (sin argumentos: los 4)
 set -uo pipefail
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/.."
 
 if [ $# -eq 0 ]; then set -- baseline load load2 spike; fi
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
@@ -24,7 +24,7 @@ for e in "$@"; do
   mkdir -p "$dir"
   echo ">>> Ejecutando $script ..."
   K6_WEB_DASHBOARD_EXPORT="$dir/html_report.html" \
-    k6 run --summary-export="$dir/resumen.json" "scripts mixed/$script.js" > "$dir/salida.txt" 2>&1
+    k6 run --summary-export="$dir/resumen.json" "scripts/mixtos/$script.js" > "$dir/salida.txt" 2>&1
   "$CHROME" --headless=new --disable-gpu --hide-scrollbars --window-size=1400,1650 \
     --virtual-time-budget=10000 --screenshot="$dir/dashboard_resumen.png" \
     "file://$PWD/$dir/html_report.html" >/dev/null 2>&1 || echo "(no se pudo generar la captura)"

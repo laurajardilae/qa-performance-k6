@@ -1,7 +1,7 @@
 import fs from "fs"
 import puppeteer from 'puppeteer';
 import path from 'path';
-import * as stages from '../stages.js';
+import * as stages from '../../lib/stages.js';
 
 // Título de la gráfica
 graficarStages('Pruebas de carga')
@@ -50,7 +50,7 @@ function generarHTML(x_in,y_in,titulo){
         const width = 1000;
         const height = 600;
 
-        const nombreArchivo = './stages_design/stage_'+i+'.html';
+        const nombreArchivo = './herramientas/stages_design/stage_'+i+'.html';
         const trace = {
             x: x_in[i],
             y: y_in[i],
@@ -126,7 +126,7 @@ async function generarImagen(ruta, n, width, height) {
     await page.setViewport({ width: Math.round(width*1.1), height: Math.round(height*1.15) });
 
     await page.screenshot({
-        path: './stages_design/design_result_'+n+'.png', 
+        path: './herramientas/stages_design/design_result_'+n+'.png', 
         fullPage: true, 
         type: 'png'
     });
